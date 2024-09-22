@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Budget Creation Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        input, select, button {
+            padding: 8px;
+            margin: 5px 0;
+            width: calc(100% - 16px);
+        }
+        button {
+            cursor: pointer;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .currency-select {
+            margin-bottom: 20px;
+        }
+        .summary-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stars {
+            font-size: 1.5rem;
+            color: gold;
+            margin-bottom: 10px;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px 0;
+        }
+        #income-expense-chart, #net-wealth-chart {
+            width: 100%;
+            height: 300px;
+        }
+        .tips {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enhanced Budget Creation Tool</h1>
+
+    <!-- Currency Selection -->
+    <div class="section currency-select">
+        <label for="currency">Select Currency: </label>
+        <select id="currency">
+            <option value="$">USD ($)</option>
+            <option value="€">EUR (€)</option>
+            <option value="£">GBP (£)</option>
+            <option value="ZAR">ZAR (R)</option>
+        </select>
+    </div>
+
+    <!-- Step 1: Initial Filters -->
+    <div class="section" id="initial-filters">
+        <h3>Personal Information</h3>
+        <label>
+            Do you own a property?
+            <select id="owns-property">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </label>
+        <label>
+            Are you married?
+            <select id="marital-status">
+                <option value="married">Married</option>
+                <option value="single">Single</option>
+            </select>
+        </label>
+        <label>
+            Do you have children?
+            <select id="has-children">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </label>
+        <button onclick="showBudgetInputs()">Proceed</button>
+    </div>
+
+    <!-- Step 2: Budget Inputs -->
+    <div class="section" id="budget-inputs" style="display: none;">
+        <h3>Income</h3>
+        <table id="income-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount (<span id="currency-symbol"></span>)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Salary</td>
+                    <td><input type="number" placeholder="Amount" id="salary-amount"></td>
+                    <td><button onclick="addIncome('Salary', 'salary-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Rental Income</td>
+                    <td><input type="number" placeholder="Amount" id="rental-amount"></td>
+                    <td><button onclick="addIncome('Rental Income', 'rental-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Investment Income</td>
+                    <td><input type="number" placeholder="Amount" id="investment-amount"></td>
+                    <td><button onclick="addIncome('Investment Income', 'investment-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Business Income</td>
+                    <td><input type="number" placeholder="Amount" id="business-amount"></td>
+                    <td><button onclick="addIncome('Business Income', 'business-amount')">Add</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="income-summary">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="income-list"></tbody>
+        </table>
+
+        <h3>Expenses</h3>
+        <table id="expense-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount (<span id="currency-symbol-expense"></span>)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Groceries</td>
+                    <td><input type="number" placeholder="Amount" id="groceries-amount"></td>
+                    <td><button onclick="addExpense('Groceries', 'groceries-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Utilities</td>
+                    <td><input type="number" placeholder="Amount" id="utilities-amount"></td>
+                    <td><button onclick="addExpense('Utilities', 'utilities-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Transportation</td>
+                    <td><input type="number" placeholder="Amount" id="transportation-amount"></td>
+                    <td><button onclick="addExpense('Transportation', 'transportation-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Insurance</td>
+                    <td><input type="number" placeholder="Amount" id="insurance-amount"></td>
+                    <td><button onclick="addExpense('Insurance', 'insurance-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Entertainment</td>
+                    <td><input type="number" placeholder="Amount" id="entertainment-amount"></td>
+                    <td><button onclick="addExpense('Entertainment', 'entertainment-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Mortgage Repayment</td>
+                    <td><input type="number" placeholder="Amount" id="mortgage-repayment-amount"></td>
+                    <td><button onclick="addExpense('Mortgage Repayment', 'mortgage-repayment-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Car Loan Repayment</td>
+                    <td><input type="number" placeholder="Amount" id="car-loan-repayment-amount"></td>
+                    <td><button onclick="addExpense('Car Loan Repayment', 'car-loan-repayment-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Personal Loan Repayment</td>
+                    <td><input type="number" placeholder="Amount" id="personal-loan-repayment-amount"></td>
+                    <td><button onclick="addExpense('Personal Loan Repayment', 'personal-loan-repayment-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Credit Card Repayment</td>
+                    <td><input type="number" placeholder="Amount" id="credit-card-repayment-amount"></td>
+                    <td><button onclick="addExpense('Credit Card Repayment', 'credit-card-repayment-amount')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Custom Expense</td>
+                    <td>
+                        <input type="text" placeholder="Expense Name" id="custom-expense-name">
+                        <input type="number" placeholder="Amount" id="custom-expense-amount">
+                    </td>
+                    <td><button onclick="addCustomExpense()">Add</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="expense-summary">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="expense-list"></tbody>
+        </table>
+
+        <button onclick="showAssetsLiabilities()">Next: Enter Assets & Liabilities</button>
+        <button onclick="showInitialFilters()">Back</button>
+    </div>
+
+    <!-- Step 3: Assets and Liabilities -->
+    <div class="section" id="assets-liabilities" style="display: none;">
+        <h3>Assets</h3>
+        <table id="assets-table">
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Value (<span id="currency-symbol-asset"></span>)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Property</td>
+                    <td><input type="number" placeholder="Value" id="property-value"></td>
+                    <td><button onclick="addAsset('Property', 'property-value')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Investments</td>
+                    <td><input type="number" placeholder="Value" id="investments-value"></td>
+                    <td><button onclick="addAsset('Investments', 'investments-value')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Savings</td>
+                    <td><input type="number" placeholder="Value" id="savings-value"></td>
+                    <td><button onclick="addAsset('Savings', 'savings-value')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Vehicles</td>
+                    <td><input type="number" placeholder="Value" id="vehicles-value"></td>
+                    <td><button onclick="addAsset('Vehicles', 'vehicles-value')">Add</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="assets-summary">
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="assets-list"></tbody>
+        </table>
+
+        <h3>Liabilities</h3>
+        <table id="liabilities-table">
+            <thead>
+                <tr>
+                    <th>Liability</th>
+                    <th>Value (<span id="currency-symbol-liability"></span>)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Mortgage</td>
+                    <td><input type="number" placeholder="Value" id="mortgage-value"></td>
+                    <td><button onclick="addLiability('Mortgage', 'mortgage-value')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Car Loan</td>
+                    <td><input type="number" placeholder="Value" id="car-loan-value"></td>
+                    <td><button onclick="addLiability('Car Loan', 'car-loan-value')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Credit Cards</td>
+                    <td><input type="number" placeholder="Value" id="credit-cards-value"></td>
+                    <td><button onclick="addLiability('Credit Cards', 'credit-cards-value')">Add</button></td>
+                </tr>
+                <tr>
+                    <td>Personal Loans</td>
+                    <td><input type="number" placeholder="Value" id="personal-loans-value"></td>
+                    <td><button onclick="addLiability('Personal Loans', 'personal-loans-value')">Add</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="liabilities-summary">
+            <thead>
+                <tr>
+                    <th>Liability</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="liabilities-list"></tbody>
+        </table>
+
+        <button onclick="showFinalSummary()">Next: View Summary</button>
+        <button onclick="showBudgetInputs()">Back</button>
+    </div>
+
+    <!-- Step 4: Final Summary -->
+    <div class="section" id="final-summary" style="display: none;">
+        <div class="summary-container">
+            <h3>Personal Wealth Summary</h3>
+            <div class="stars" id="affordability-stars">⭐⭐⭐</div>
+            <div class="chart-container">
+                <canvas id="income-expense-chart"></canvas>
+            </div>
+            <p id="total-assets">Total Assets: 0</p>
+            <p id="total-liabilities">Total Liabilities: 0</p>
+            <p id="net-wealth">Net Wealth: 0</p>
+            <div class="chart-container">
+                <canvas id="net-wealth-chart"></canvas>
+            </div>
+            <h3>Monthly Budget Summary</h3>
+            <p id="monthly-income-summary">Total Monthly Income: 0</p>
+            <p id="monthly-expense-summary">Total Monthly Expenses: 0</p>
+            <h3>Cost of Living Score</h3>
+            <p id="cost-of-living-score">Score: 0%</p>
+            <p id="affordability-ranking">Affordability Ranking: Average</p>
+
+            <div class="tips">
+                <h4>Cost-Saving Tips</h4>
+                <ul id="cost-saving-tips">
+                    <li>Tip 1: Reduce discretionary spending by tracking your expenses.</li>
+                    <li>Tip 2: Consider refinancing your loans to lower interest rates.</li>
+                    <li>Tip 3: Automate savings to build an emergency fund.</li>
+                </ul>
+            </div>
+        </div>
+
+        <button onclick="showAssetsLiabilities()">Back</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let income = [];
+        let expenses = [];
+        let assets = [];
+        let liabilities = [];
+
+        function showInitialFilters() {
+            document.getElementById('budget-inputs').style.display = 'none';
+            document.getElementById('initial-filters').style.display = 'block';
+        }
+
+        function showBudgetInputs() {
+            const currencySymbol = document.getElementById('currency').value;
+
+            document.getElementById('currency-symbol').textContent = currencySymbol;
+            document.getElementById('currency-symbol-expense').textContent = currencySymbol;
+            document.getElementById('currency-symbol-asset').textContent = currencySymbol;
+            document.getElementById('currency-symbol-liability').textContent = currencySymbol;
+
+            document.getElementById('initial-filters').style.display = 'none';
+            document.getElementById('assets-liabilities').style.display = 'none';
+            document.getElementById('budget-inputs').style.display = 'block';
+        }
+
+        function showAssetsLiabilities() {
+            document.getElementById('budget-inputs').style.display = 'none';
+            document.getElementById('assets-liabilities').style.display = 'block';
+        }
+
+        function showFinalSummary() {
+            updateFinalSummary();
+            document.getElementById('assets-liabilities').style.display = 'none';
+            document.getElementById('final-summary').style.display = 'block';
+        }
+
+        function addIncome(category, inputId) {
+            const amount = parseFloat(document.getElementById(inputId).value);
+            if (!isNaN(amount) && amount > 0) {
+                income.push({ category, amount });
+                document.getElementById(inputId).value = '';
+                updateBudget();
+            }
+        }
+
+        function addExpense(category, inputId) {
+            const amount = parseFloat(document.getElementById(inputId).value);
+            if (!isNaN(amount) && amount > 0) {
+                expenses.push({ category, amount });
+                document.getElementById(inputId).value = '';
+                updateBudget();
+            }
+        }
+
+        function addCustomExpense() {
+            const category = document.getElementById('custom-expense-name').value;
+            const amount = parseFloat(document.getElementById('custom-expense-amount').value);
+            if (category && !isNaN(amount) && amount > 0) {
+                expenses.push({ category, amount });
+                document.getElementById('custom-expense-name').value = '';
+                document.getElementById('custom-expense-amount').value = '';
+                updateBudget();
+            }
+        }
+
+        function updateBudget() {
+            // Update income table
+            const incomeList = document.getElementById('income-list');
+            incomeList.innerHTML = '';
+            let totalIncome = 0;
+            income.forEach((item, index) => {
+                totalIncome += item.amount;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.category}</td>
+                    <td>${item.amount.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}</td>
+                    <td><button onclick="deleteIncome(${index})">Delete</button></td>
+                `;
+                incomeList.appendChild(row);
+            });
+
+            // Update expense table
+            const expenseList = document.getElementById('expense-list');
+            expenseList.innerHTML = '';
+            let totalExpenses = 0;
+            expenses.forEach((item, index) => {
+                totalExpenses += item.amount;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.category}</td>
+                    <td>${item.amount.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}</td>
+                    <td><button onclick="deleteExpense(${index})">Delete</button></td>
+                `;
+                expenseList.appendChild(row);
+            });
+
+            // Update totals
+            document.getElementById('total-income').textContent = `Total Income: ${totalIncome.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+            document.getElementById('total-expenses').textContent = `Total Expenses: ${totalExpenses.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+            document.getElementById('net-balance').textContent = `Net Balance: ${(totalIncome - totalExpenses).toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+        }
+
+        function addAsset(category, inputId) {
+            const value = parseFloat(document.getElementById(inputId).value);
+            if (!isNaN(value) && value > 0) {
+                assets.push({ category, value });
+                document.getElementById(inputId).value = '';
+                updateAssetsLiabilities();
+            }
+        }
+
+        function addLiability(category, inputId) {
+            const value = parseFloat(document.getElementById(inputId).value);
+            if (!isNaN(value) && value > 0) {
+                liabilities.push({ category, value });
+                document.getElementById(inputId).value = '';
+                updateAssetsLiabilities();
+            }
+        }
+
+        function updateAssetsLiabilities() {
+            // Update assets table
+            const assetsList = document.getElementById('assets-list');
+            assetsList.innerHTML = '';
+            let totalAssets = 0;
+            assets.forEach((item, index) => {
+                totalAssets += item.value;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.category}</td>
+                    <td>${item.value.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}</td>
+                    <td><button onclick="deleteAsset(${index})">Delete</button></td>
+                `;
+                assetsList.appendChild(row);
+            });
+
+            // Update liabilities table
+            const liabilitiesList = document.getElementById('liabilities-list');
+            liabilitiesList.innerHTML = '';
+            let totalLiabilities = 0;
+            liabilities.forEach((item, index) => {
+                totalLiabilities += item.value;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.category}</td>
+                    <td>${item.value.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}</td>
+                    <td><button onclick="deleteLiability(${index})">Delete</button></td>
+                `;
+                liabilitiesList.appendChild(row);
+            });
+
+            // Update final summary data
+            document.getElementById('total-assets').textContent = `Total Assets: ${totalAssets.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+            document.getElementById('total-liabilities').textContent = `Total Liabilities: ${totalLiabilities.toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+            document.getElementById('net-wealth').textContent = `Net Wealth: ${(totalAssets - totalLiabilities).toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+        }
+
+        function updateFinalSummary() {
+            const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
+            const totalAssets = assets.reduce((sum, item) => sum + item.value, 0);
+            const totalLiabilities = liabilities.reduce((sum, item) => sum + item.value, 0);
+            const netWealth = totalAssets - totalLiabilities;
+
+            // Assuming the amounts are already monthly
+            const monthlyIncome = totalIncome.toFixed(2);
+            const monthlyExpenses = totalExpenses.toFixed(2);
+
+            const costOfLivingScore = ((totalExpenses / totalIncome) * 100).toFixed(2);
+            let affordabilityRanking = 'Average';
+            let stars = '⭐⭐⭐';
+            if (costOfLivingScore < 50) {
+                affordabilityRanking = 'Excellent';
+                stars = '⭐⭐⭐⭐⭐';
+            } else if (costOfLivingScore < 75) {
+                affordabilityRanking = 'Good';
+                stars = '⭐⭐⭐⭐';
+            } else if (costOfLivingScore < 100) {
+                affordabilityRanking = 'Average';
+                stars = '⭐⭐⭐';
+            } else {
+                affordabilityRanking = 'Poor';
+                stars = '⭐';
+            }
+
+            document.getElementById('monthly-income-summary').textContent = `Total Monthly Income: ${parseFloat(monthlyIncome).toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+            document.getElementById('monthly-expense-summary').textContent = `Total Monthly Expenses: ${parseFloat(monthlyExpenses).toLocaleString(undefined, { style: 'currency', currency: document.getElementById('currency').value })}`;
+            document.getElementById('cost-of-living-score').textContent = `Score: ${costOfLivingScore}%`;
+            document.getElementById('affordability-ranking').textContent = `Affordability Ranking: ${affordabilityRanking}`;
+            document.getElementById('affordability-stars').textContent = stars;
+
+            // Update charts
+            updateCharts(totalIncome, totalExpenses, netWealth);
+        }
+
+        function updateCharts(totalIncome, totalExpenses, netWealth) {
+            const incomeExpenseChartCtx = document.getElementById('income-expense-chart').getContext('2d');
+            new Chart(incomeExpenseChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Income', 'Expenses'],
+                    datasets: [{
+                        data: [totalIncome, totalExpenses],
+                        backgroundColor: ['#4CAF50', '#FF5733'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+
+            const netWealthChartCtx = document.getElementById('net-wealth-chart').getContext('2d');
+            new Chart(netWealthChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Net Wealth'],
+                    datasets: [{
+                        label: 'Net Wealth',
+                        data: [netWealth],
+                        backgroundColor: '#3E95CD',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        }
+
+        function deleteIncome(index) {
+            income.splice(index, 1);
+            updateBudget();
+        }
+
+        function deleteExpense(index) {
+            expenses.splice(index, 1);
+            updateBudget();
+        }
+
+        function deleteAsset(index) {
+            assets.splice(index, 1);
+            updateAssetsLiabilities();
+        }
+
+        function deleteLiability(index) {
+            liabilities.splice(index, 1);
+            updateAssetsLiabilities();
+        }
+    </script>
+</body>
+</html>
